@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Bootstrap -->
+        <link href="/css/bootstrap.css" rel="stylesheet">
+        <link href="/css/slider.css" rel="stylesheet">
+        <title>MyWolfPackGuide</title>
+    </head>
+    <body>
+        <div class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <a href="/dashboard"> <img src="/img/wolf_paw.png"> </a>
+                    <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+                <div class="navbar-collapse collapse" id="navbar-main">
+                    <ul class="nav navbar-nav">
+                        <% if ( typeof dashboard !== 'undefined' && dashboard )  { %>
+                        <li>
+                            <a href="/dashboard">Dashboard</a>
+                        </li>
+                        <% } %>
+                        <% if ( typeof browse !== 'undefined' && browse )  { %>
+                        <li>
+                            <a href="/events">Browse</a>
+                        </li>
+                        <% } %>
+                        <% if ( typeof create !== 'undefined' && create )  { %>
+                        <li>
+                            <a href="/events/create">Create</a>
+                        </li>
+                        <% } %>
+                    </ul>
+                        <% if ( typeof logout !== 'undefined' && logout )  { %>
+                    <div class="navbar-form navbar-right">
+                            <a href="/logout"><button class="btn btn-danger">Log out</button></a>
+                    </div>
+                        <% } %>
+                        <% if ( typeof search !== 'undefined' && search )  { %>
+                    <form class="navbar-form navbar-right" role="form" method="POST" action="/events/search" >
+                        <div class="form-group">
+                            <input type="text" placeholder="Search" class="form-control" name="search">
+                        </div>
+                        <button type="submit" class="btn btn-success">Search</button> 
+                    </form>
+                        <% } %>
+                </div>
+            </div>
+        </div>

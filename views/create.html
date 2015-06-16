@@ -1,0 +1,204 @@
+<% include header.html %>
+    <link href="/css/bootstrap-datetimepicker.css" rel="stylesheet">
+
+    <div class="container">
+      <div class="page-header" id="banner">
+        <div class="row">
+        </div>
+      </div>
+
+      <div class="row">
+
+    <!-- Create Event Form -->
+      <div class="col-md-8 well">
+        <h1><span class="glyphicon glyphicon-pencil"></span> Create a New Event</h1>
+        <hr />
+        <form class="form-horizontal" method="POST" action="/events" role="form">
+          <div class="form-group" id="title_input">
+            <label for="title" class="col-sm-3 control-label">Event title</label>
+            <div class="col-sm-9">
+              <input name="title" id="title" type="text" placeholder="Enter event title" class="form-control">
+            </div>
+          </div>
+          <div class="form-group" id="starttimepicker_input">
+            <label for="startDate" class="col-sm-3 control-label">Start date</label>
+            <div class="col-sm-9">
+              <div class='input-group date' >
+                <input name="startDate" id='starttimepicker' type='text' class="form-control" placeholder="Start date and time"  />
+                <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="form-group" id="endtimepicker_input">
+            <label for="endDate" class="col-sm-3 control-label">End date</label>
+            <div class="col-sm-9">
+              <div class='input-group date'>
+                <input  id='endtimepicker' name="endDate" type='text' class="form-control" placeholder="End date and time"  />
+                <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="form-group" id="address_input">
+            <label for="location" class="col-sm-3 control-label">Address</label>
+            <div class="col-sm-9">
+              <input name="address" id="address" type="text" placeholder="Enter Address" class="form-control" onblur="get_location_geocoding();">
+              <input class="form-control" id="latitude" name="latitude" type="hidden" >
+              <input class="form-control" id="longitude" name="longitude" type="hidden"  >
+            </div>
+          </div>
+          <div class="form-group" id="price_input">
+            <label for="price" class="col-sm-3 control-label">Price</label>
+            <div class="col-sm-9">
+              <div class=" input-group">
+                <span class="input-group-addon">$</span>
+                <input name="price" id="price" type="text" placeholder="Enter price" class="form-control">
+                <span class="input-group-addon">.00</span>
+              </div>
+            </div>
+          </div>
+          <div class="form-group" id="info_input">
+            <label for="info" class="col-sm-3 control-label">Event description</label>
+            <div class="col-sm-9">
+              <input name="info" id="info" type="text" placeholder="Enter event description" class="form-control">
+            </div>
+          </div>
+          <div class="form-group" id="maxattendees_input">
+            <label for="maxattendees" class="col-sm-3 control-label">Max. Attendees</label>
+            <div class="col-sm-9">
+              <input name="maxattendees" id="maxattendees" type="text" placeholder="Enter no. of max attendees" class="form-control">
+            </div>
+          </div>
+          <div class="form-group" id="organization_input">
+            <label for="organization" class="col-sm-3 control-label">Organization</label>
+            <div class="col-sm-9">
+              <input name="organization" id="organization" type="text" placeholder="Enter organization" class="form-control">
+            </div>
+          </div>
+          <hr />
+          <button type="submit"  id="submit_button" class="btn btn-primary btn-lg btn-block">Create Event</button>
+        </form>
+      </div>
+    <style>
+      #event_map {
+        height: 700px;
+        margin: 0px;
+        margin-top: 0px;
+        padding: 0px
+      }
+    </style>
+      <div class="col-md-4" id="event_map">
+        Maps goes here
+      </div>
+    <!-- Create Event Form -->
+        
+      </div> <!-- end div row -->
+
+      <hr>
+<% include footer.html %>
+
+<script src="/js/moment.js" type="text/javascript"></script>
+<script src="/js/bootstrap-datetimepicker.js" type="text/javascript"></script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#starttimepicker').datetimepicker();
+        $('#endtimepicker').datetimepicker();
+
+        add_input_checker("title", function(value) {return value != '';});
+        add_input_checker("address", function(value) {return value != '';});
+        add_input_checker("starttimepicker", function(value) {return value != '';});
+        add_input_checker("endtimepicker", function(value) {return value != '';});
+        add_input_checker("price", function(value) {
+          var regex  = /^\d+(?:\.\d{0,2})$/;
+          return regex.test(value + ".00");
+        });
+        add_input_checker("info", function(value) {return value != '';});
+        add_input_checker("organization", function(value) {return value != '';});
+        add_input_checker("maxattendees", function(value) {return value != '';});
+    });
+
+    function add_input_checker(id_base, fn) {
+        id_base = "#" + id_base;
+        var $elem_input = $(id_base + "_input");
+        var $elem = $(id_base);
+        $elem.on('keyup', function() { // Focus event
+            if (fn(this.value)) {
+                $elem_input.removeClass("has-error");
+                $elem_input.addClass("has-success");
+            }
+        });
+        $elem.on('blur', function() { // Focus event
+            if (!fn(this.value)) {
+                $elem_input.removeClass("has-success");
+                $elem_input.addClass("has-error");
+            }
+            else {
+                $elem_input.removeClass("has-error");
+                $elem_input.addClass("has-success");
+            }
+        });
+    }
+
+    function get_location_geocoding() {
+      var loc = document.getElementById('address').value;
+      var xmlhttp;
+      if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+        xmlhttp=new XMLHttpRequest();
+      }
+      else {// code for IE6, IE5
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+      }
+      xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+          var data = JSON.parse(xmlhttp.responseText);
+          lng = data.results[0].geometry.location.lng;
+          lat = data.results[0].geometry.location.lat;
+          document.getElementById('longitude').value = lng;
+          document.getElementById('latitude').value = lat;
+
+          if (marker) {
+            marker.setMap(null);
+          }
+          marker = new google.maps.Marker({
+            position: new google.maps.LatLng(lat, lng),
+            map: map,
+            draggable: false,
+            animation: google.maps.Animation.DROP
+          });
+
+          map.panTo(data.results[0].geometry.location);
+        }
+      };
+      var url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + loc + "&sensor=false";
+      xmlhttp.open("GET", url, true);
+      xmlhttp.send();
+
+    }
+
+var ncsu = new google.maps.LatLng(35.772013, -78.674127);
+
+var markers = [];
+var iterator = 0;
+var infowindow;
+var map;
+var marker;
+
+function initialize() {
+  var mapOptions = {
+    zoom: 17,
+    center: ncsu
+  };
+
+  map = new google.maps.Map(document.getElementById('event_map'),
+          mapOptions);
+  infowindow = new google.maps.InfoWindow();
+  google.maps.event.addListener(map, 'click', function() {
+    infowindow.close();
+  });
+}
+
+google.maps.event.addDomListener(window, 'load', initialize);
+
+</script>

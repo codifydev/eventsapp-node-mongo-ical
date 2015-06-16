@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="eng">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MyWolfPackGuide</title>
+
+    <!-- Bootstrap -->
+      <link href="/css/bootstrap.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a href="/"><img src="/img/wolf_paw.png"></a>
+          <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+        <div class="navbar-collapse collapse" id="navbar-main">
+          <form method="POST" action="/login" class="navbar-form navbar-right" role="form">
+            <div class="form-group">
+              <input type="text" name="username" placeholder="User Name" class="form-control">
+            </div>
+            <div class="form-group">
+              <input type="password" name="password" placeholder="Password" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-success">Sign in</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <br>
+    <br>
+    <br>
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+
+    <% if (typeof notification != 'undefined') { %>
+    <div class="container">
+      <div class="row">
+        <div class="alert alert-<%= notification.type %> alert-dismissable">
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+          <%= notification.message %>
+        </div>
+      </div>
+    </div>
+    <% } %>
+    
+    <div class="jumbotron">
+      <div class="container">
+        <h1>My Wolfpack Guide</h1>
+        <p>Out of the loop no more! My Wolfpack Guide keeps you informed about all the events going on around you.</p>
+        <p><a class="btn btn-primary btn-lg" role="button" href="/register">Register</a></p>
+      </div>
+    </div>
+
+    <div class="container">
+      <!-- Example row of columns -->
+      <div class="row">
+        <% events.forEach(function(event){ %>
+        <div class="col-md-4">
+          <h3> <%= event.title %> </h3>
+          <p> Price: <%= event.price_beauty %>
+          </p>
+          <p><a class="btn btn-default" href="events/<%=event._id%>" role="button">View details &raquo;</a></p>
+        </div>
+        <% }) %>
+      </div>
+
+      <hr>
+
+      <footer>
+        <p>&copy; MyWolfPackGuide 2014</p>
+      </footer>
+    </div> <!-- /container -->
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="/js/bootstrap.js"></script>
+  </body>
+</html>

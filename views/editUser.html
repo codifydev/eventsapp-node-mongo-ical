@@ -1,0 +1,108 @@
+<% 
+dashboard = userRole != "none";
+browse = true;
+create = userRole == "admin" || userRole == "coordinator";
+search = true;
+logout = userRole != "none";
+ %>
+    <% include header.html %>
+
+    <div class="container">
+
+        <div class="page-header" id="banner">
+            <div class="row">
+            </div>
+        </div>
+
+    <!-- Example row of columns -->
+    <div class="row">
+
+        
+        <div class="col-md-3">
+        </div>
+        <div class="col-md-6 well">
+            <h1><span class="glyphicon glyphicon-pencil"></span> Edit <%= user.username%>'s profile</h1>
+            <hr />
+            <form class="form-horizontal" method="POST" action="/user" role="form">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input name="email" id="email" type="text" value=<%= user.email%> class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input name="phone" id="phone" type="text" value="<%= user.phone%>" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="minPrice">Price Range min</label>
+                    <input name="minPrice" id="minPrice" type="text" value="<%= user.preferences.price.min%>" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="maxPrice">max</label>
+                    <input name="maxPrice" id="maxPrice" type="text" value="<%= user.preferences.price.max%>" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="location">Address</label>
+                    <input name="address" id="address" type="text" value="<%= user.location.address%>" class="form-control" onblur="get_location_geocoding();">
+                    <input class="form-control" id="latitude" name="latitude" type="hidden" >
+                    <input class="form-control" id="longitude" name="longitude" type="hidden"  >
+                </div>
+
+                <div class="form-group">
+                    <label for="maxRadius">Max Radius</label>
+                    <input name="maxRadius" id="maxRadius" type="text" value=<%= user.preferences.max_radius%> class="form-control">
+                </div>
+
+                <div class="form-group">
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" name="days" value="0" <% if (days[0]) { %> checked="checked" <% } %>>Sunday
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" name="days" value="1" <% if (days[1]) { %> checked="checked" <% } %>>Monday
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" name="days" value="2" <% if (days[2]) { %> checked="checked" <% } %>>Tuesday
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" name="days" value="3" <% if (days[3]) { %> checked="checked" <% } %>>Wednesday
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" name="days" value="4" <% if (days[4]) { %> checked="checked" <% } %>>Thursday
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" name="days" value="5" <% if (days[5]) { %> checked="checked" <% } %>>Friday
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" name="days" value="6" <% if (days[6]) { %> checked="checked" <% } %>>Saturday
+                    </label>
+                  </div>
+                </div>
+
+                <hr />
+                <button type="submit" class="btn btn-primary btn-lg btn-block">Save</button>
+            </form>
+        </div>
+        <div class="col-md-3">
+        </div>
+        
+
+    </div> <!-- end div row -->
+
+    <hr>
+
+    <% include footer.html %>

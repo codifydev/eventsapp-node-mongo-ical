@@ -1,0 +1,201 @@
+<% 
+dashboard = userRole != "none";
+browse = true;
+create = userRole == "admin" || userRole == "coordinator";
+search = true;
+logout = userRole != "none";
+ %>
+ <% include header.html %>
+
+    <div class="container">
+
+      <div id="map-canvas">MAP goes here</div>
+    </div>
+    <% if (typeof notification != 'undefined') { %>
+    <div class="container">
+      <div class="row">
+        <div class="alert alert-<%= notification.type %> alert-dismissable">
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+          <%= notification.message %>
+        </div>
+      </div>
+    </div>
+    <% } %>
+    <div class="container">
+      <!-- Example row of columns -->
+      
+
+    <!-- Sandbox for Interface Testing -->
+        <% var counter = -1;
+        events.forEach(function(event){ 
+          counter++;
+        %>
+        <% if ((counter % 3) == 0 && counter > 0) { %>
+          </div>
+        <% } %>
+        <% if ((counter % 3) == 0) { %>
+          <div class="row">
+        <% } %>
+        <div class="col-md-4">
+          <h3> <%= event.title %> </h3>
+          <p> Price: <%= event.price_beauty %>
+          </p>
+          <p><a class="btn btn-default" href="/events/<%=event._id%>" role="button">View details &raquo;</a></p>
+        </div>
+
+        <% }) %>
+
+        <% if ((counter % 3) && (counter >= 0)) { %>
+      </div>
+        <% } %>
+    <!-- End Sandbox for Interface Testing -->
+
+      <div class="col-md-12 well">
+        <form class="form-horizontal" method="POST" action="/events/filter" role="form">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" name="days" value="0" <% if (days[0]) { %> checked="checked" <% } %>>Sunday
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" name="days" value="1" <% if (days[1]) { %> checked="checked" <% } %>>Monday
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" name="days" value="2" <% if (days[2]) { %> checked="checked" <% } %>>Tuesday
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" name="days" value="3" <% if (days[3]) { %> checked="checked" <% } %>>Wednesday
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" name="days" value="4" <% if (days[4]) { %> checked="checked" <% } %>>Thursday
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" name="days" value="5" <% if (days[5]) { %> checked="checked" <% } %>>Friday
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" name="days" value="6" <% if (days[6]) { %> checked="checked" <% } %>>Saturday
+            </label>
+          </div>
+
+          <h2>Organizations</h2>
+        <% organizations.forEach(function(org){ %>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" name="organizations" value="<%= org %>"><%= org %>
+            </label>
+          </div>
+        <% }); %>
+          <hr />
+          <div class="form-group">
+            <label for="priceRange">Price range</label>
+            <input id="priceRange" type="text" value="" data-slider-min="0" data-slider-max="500" data-slider-step="5" data-slider-value="[<%= minPrice %>,<%= maxPrice %>]"/> 
+            <input id="minPrice" name="minPrice" type="hidden" value="<%= minPrice %>" />
+            <input id="maxPrice" name="maxPrice" type="hidden" value="<%= maxPrice %>" />
+          </div>
+          <button type="submit"  id="submit_button" class="btn btn-primary">Update Filter</button>
+          <a href="/events" class="btn btn-danger">Reset</a>
+        </form>
+      </div>
+
+      <hr>
+
+<% include footer.html %>
+
+    <style>
+      #map-canvas {
+        height: 400px;
+        margin: 0px;
+        margin-top: 60px;
+        padding: 0px
+      }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+    <script type='text/javascript' src="/js/bootstrap-slider.js"></script>
+<script type='text/javascript'>
+    $(document).ready(function() {
+        $("#priceRange").slider({
+            tooltip: 'always'
+        }).on('slide', function(ev) {
+          document.getElementById('minPrice').value = ev.value[0];
+          document.getElementById('maxPrice').value = ev.value[1];
+        });
+    });
+</script>
+    <script>
+
+var ncsu = new google.maps.LatLng(35.772013, -78.674127);
+
+var neighborhoods = [
+  <% events.forEach(function(event){ %>
+  new google.maps.LatLng(<%= event.location.geo.lat %>, <%= event.location.geo.lon %>),
+  <% }) %>
+];
+var event_details = [
+  <% events.forEach(function(event){ %>
+  "<a href='events/<%=event._id%>'><%= event.title %></a>",
+  <% }) %>
+];
+
+var markers = [];
+var iterator = 0;
+var infowindow;
+var map;
+
+function initialize() {
+  var mapOptions = {
+    zoom: 13,
+    center: ncsu
+  };
+
+  map = new google.maps.Map(document.getElementById('map-canvas'),
+          mapOptions);
+  infowindow = new google.maps.InfoWindow();
+  google.maps.event.addListener(map, 'click', function() {
+    infowindow.close();
+  });
+
+  setTimeout(function() {
+    drop();
+  }, 500);
+}
+
+function drop() {
+  for (var i = 0; i < neighborhoods.length; i++) {
+    setTimeout(function() {
+      addMarker();
+    }, i * 200);
+  }
+}
+
+function addMarker() {
+  var marker = new google.maps.Marker({
+    position: neighborhoods[iterator],
+    map: map,
+    draggable: false,
+    animation: google.maps.Animation.DROP
+  });
+
+  google.maps.event.addListener(marker, 'click', function() {
+    infowindow.setContent(event_details[markers.indexOf(marker)]);
+    infowindow.open(map, this);
+  });
+
+  markers.push(marker);
+
+  iterator++;
+}
+
+google.maps.event.addDomListener(window, 'load', initialize);
+
+    </script>

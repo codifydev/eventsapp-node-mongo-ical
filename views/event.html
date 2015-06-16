@@ -1,0 +1,232 @@
+<% 
+dashboard = userRole != "none";
+browse = true;
+create = userRole == "admin" || userRole == "coordinator";
+search = true;
+logout = userRole != "none";
+ %>
+<% include header.html %>
+<link href="/css/addevent.css" rel="stylesheet">
+
+
+    <div class="container">
+      <div class="page-header" id="banner">
+        <div class="row">
+        </div>
+      </div>
+
+    <% if (typeof notification != 'undefined') { %>
+      <div class="row">
+        <div class="alert alert-<%= notification.type %> alert-dismissable">
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+          <%= notification.message %>
+        </div>
+      </div>
+    <% } %>
+      <div class="row">
+        <div class="col-md-8 well">
+        <h2><span class="glyphicon glyphicon-info-sign"></span> <%= event.title %></h2>
+
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h3 class="panel-title">Info</h3>
+              </div>
+              <div class="panel-body">
+                <%= event.info %>
+                </div>
+            </div>
+
+
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h3 class="panel-title">Event Dates </span> </h3>
+              </div>
+              <div class="panel-body">
+                <span id="_startDateView"> </span>
+                </br>Until <span id="_endDateView"> </span>
+                </div>
+            </div>
+
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h3 class="panel-title">Location</h3>
+              </div>
+              <div class="panel-body">
+                <%= event.location.address %>, <%= event.location.geo.lon %>,  <%= event.location.geo.lat %>
+                </div>
+            </div>
+
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h3 class="panel-title">Price</h3>
+              </div>
+              <div class="panel-body">
+                <%= event.price_beauty %>
+                </div>
+            </div>
+
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h3 class="panel-title">Organization</h3>
+              </div>
+              <div class="panel-body">
+                <p><%= event.organization %></p>
+                </div>
+            </div>
+
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h3 class="panel-title">Attendees</h3>
+              </div>
+
+              <div class="panel-body">
+                  <% if (event.maxattendees > 0) { %>
+                      <div class="progress">
+                          <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: <%= attendees.length*100/event.maxattendees %>%;">
+                            <%= attendees.length %>/<%= event.maxattendees %>
+                          </div>
+                        </div>
+                  <% } %>
+
+                  <% for(var i=0; i<attendees.length; i++) {%>
+                      <li><%= attendees[i] %></li>
+                  <% } %>
+              </div> <!-- end panel-body -->
+            </div> <!-- end panel -->
+            <% if (userRole == "user") { %>
+              <% if (isAttending) { %>
+              <a class="btn btn-primary btn-lg btn-block" href="/events/<%=event._id%>/unattend" role="button">Unattend Event</a>
+              <% } else { %>
+              <a class="btn btn-primary btn-lg btn-block" href="/events/<%=event._id%>/attend" role="button">Attend Event</a>
+              <% } %>
+            <% } %>
+
+              <% if (userRole == "admin" || userRole == "coordinator") { %>
+              <br><a class="btn btn-danger btn-lg btn-block" href="/events/<%=event._id%>/delete" role="button">Delete Event</a>
+              <% } %>
+        </div>
+      <style>
+        #event_map {
+          height: 700px;
+          margin: 0px;
+          margin-top: 0px;
+          padding: 0px
+        }
+      </style>
+        <div class="col-md-4" id="event_map">
+          <h2>Map goes here</h2>
+        </div>
+      </div> <!-- end div row -->
+
+<div class="well">
+<h2> <span class="glyphicon glyphicon-calendar"></span> Add this event to your calendar </h2>
+
+        <div class="addthisevent">
+          <span class="_start" id="_startDate2"></span>
+          <span class="_end" id="_endDate2"></span>
+          <span class="_zonecode">15</span>
+          <span class="_summary"> <%= event.title %> </span>
+          <span class="_description"> <%= event.info %> </span>
+          <span class="_location"> <%= event.location %> </span>
+          <span class="_organizer"> <%= event.organization %> </span>
+          <span class="_organizer_email"> </span>
+          <span class="_all_day_event">false</span>
+          <span class="_date_format">MM/DD/YYYY</span>
+        </div>
+</div>
+
+<div class="well">
+<h2> <span class="glyphicon glyphicon-share"></span> Share this event</h2>
+        <!-- AddThis Button BEGIN -->
+<div class="addthis_toolbox addthis_default_style addthis_32x32_style"
+addthis:url="http://localhost:3000/events/<%= event._id %>" addthis:title="<%= event.title %>"
+addthis:description="<%= event.info %>" >
+
+<a class="addthis_button_preferred_1"></a>
+<a class="addthis_button_preferred_2"></a>
+<a class="addthis_button_preferred_3"></a>
+<a class="addthis_button_preferred_4"></a>
+<a class="addthis_button_compact"></a>
+<a class="addthis_counter addthis_bubble_style"></a>
+</div>
+
+<!-- AddThis Button END -->
+
+</div>
+<hr>
+
+<% include footer.html %>
+
+<!-- AddThisEvent -->
+<script type="text/javascript" src="http://js.addthisevent.com/atemay.js"></script>
+<script src="/js/moment.js" type="text/javascript"></script>
+<!-- AddThisEvent Settings -->
+<script type="text/javascript">
+addthisevent.settings({
+  mouse   : false,
+  css     : false,
+  outlook   : {show:true, text:"Outlook"},
+  google    : {show:true, text:"Google"},
+  yahoo   : {show:true, text:"Yahoo"},
+  ical    : {show:true, text:"iCal"},
+  hotmail   : {show:true, text:"Hotmail"}
+});
+</script>
+
+<!-- AddThis Share Button -->
+<script type="text/javascript">var addthis_config = {"data_track_addressbar":true};</script>
+<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5362a6c95b38103a"></script>
+
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+<script>
+  var startDateObj = new Date("<%= event.date.start %>");
+  var startDate = moment(startDateObj).format("MM/DD/YYYY hh:mm:ss A");
+  var startDateView = moment(startDateObj).format("dddd Do MMM 'YY. hh:mm:ss A");
+  var endDateObj = new Date("<%= event.date.end %>");
+  var endDate = moment(endDateObj).format("MM/DD/YYYY hh:mm:ss A");
+  var endDateView = moment(endDateObj).format("dddd Do MMM 'YY. hh:mm:ss A");
+  document.getElementById("_startDateView").innerHTML = startDateView;
+  document.getElementById("_startDate2").innerHTML = startDate;
+  document.getElementById("_endDateView").innerHTML = endDateView;
+  document.getElementById("_endDate2").innerHTML = endDate;
+</script>
+
+<script type="text/javascript">
+
+var ncsu = new google.maps.LatLng(35.772013, -78.674127);
+
+var loc_lat = <%= event.location.geo.lat %>;
+var loc_lon = <%= event.location.geo.lon %>;
+
+var markers = [];
+var iterator = 0;
+var infowindow;
+var map;
+var marker;
+
+function initialize() {
+  var mapOptions = {
+    zoom: 17,
+    center: ncsu
+  };
+
+  map = new google.maps.Map(document.getElementById('event_map'),
+          mapOptions);
+  infowindow = new google.maps.InfoWindow();
+  google.maps.event.addListener(map, 'click', function() {
+    infowindow.close();
+  });
+
+  var marker = new google.maps.Marker({
+    position: new google.maps.LatLng(loc_lat, loc_lon),
+    map: map,
+    draggable: false,
+    animation: google.maps.Animation.DROP
+  });
+
+  map.panTo({lng: loc_lon, lat: loc_lat});
+}
+
+google.maps.event.addDomListener(window, 'load', initialize);
+
+</script>

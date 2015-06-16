@@ -1,0 +1,167 @@
+<% 
+dashboard = userRole != "none";
+browse = true;
+create = userRole == "admin" || userRole == "coordinator";
+search = true;
+logout = userRole != "none";
+ %>
+<% include header.html %>
+	<br>
+	<br>
+	<br>
+
+	<% if (typeof notification != 'undefined') { %>
+	<div class="container">
+	  <div class="row">
+		<div class="alert alert-<%= notification.type %> alert-dismissable">
+		  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+		  <%= notification.message %>
+		</div>
+	  </div>
+	</div>
+	<% } %>
+
+<div class="container">
+
+	<!-- row of columns -->
+	<div class="row">
+
+		<div class="col-md-8 well" style="background: white">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title">Attended Events</h3>
+				</div>
+				<div class="panel-body">
+					<% attendingEvents.forEach(function(event){ %>
+						<div class="col-md-4">
+							<h3> <%= event.title %> </h3>
+							<p> Price:
+								<% if (event.price == 0) { %>
+									FREE
+								<% } else { %>
+									$<%= parseFloat(event.price).toFixed(2) %>
+								<% } %>
+							</p>
+							<p><a class="btn btn-default" href="/events/<%=event._id%>" role="button">View details &raquo;</a></p>
+						</div>
+					<% }) %>
+				</div>
+			</div>
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title">Recommended Events</h3>
+				</div>
+				<div class="panel-body">
+					<% recommendedEvents.forEach(function(event){ %>
+						<div class="col-md-4">
+							<h3> <%= event.title %> </h3>
+							<p> Price:
+								<% if (event.price == 0) { %>
+									FREE
+								<% } else { %>
+									$<%= parseFloat(event.price).toFixed(2) %>
+								<% } %>
+							</p>
+							<p><a class="btn btn-default" href="/events/<%=event._id%>" role="button">View details &raquo;</a></p>
+						</div>
+					<% }) %>
+				</div>
+				
+			</div>
+		</div>
+
+		<div class="col-md-4 well">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title">Account Information</h3>
+				</div>
+				<div class="panel-body">
+					<p>Username: <%= user.username%></p>
+					<p>Email: <%= user.email%></p>
+					<p>Role: <%= user.role%></p>
+					<a href="/user/edit"><button type="button" class="btn btn-sm btn-default">Edit Profile</button></a>
+				</div>
+			</div>
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title">Preferences</h3>
+				</div>
+				<div class="panel-body">
+					<br>
+					<div class="form-group">
+						<label for="priceRange">Price range: </label>
+						<input id="priceRange" type="text" value="" data-slider-min="0" data-slider-max="500" data-slider-step="5" data-slider-value="[<%= user.preferences.price.min%>,<%= user.preferences.price.max%>]"/> 
+						<input id="minPrice" name="minPrice" type="hidden" value="<%= user.preferences.price.min%>" />
+						<input id="maxPrice" name="maxPrice" type="hidden" value="<%= user.preferences.price.max%>" />
+					</div>
+					<div class="form-group">
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" name="days" value="0" disabled <% if (days[0]) { %> checked="checked" <% } %>>Sunday
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" name="days" value="1" disabled <% if (days[1]) { %> checked="checked" <% } %>>Monday
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" name="days" value="2" disabled <% if (days[2]) { %> checked="checked" <% } %>>Tuesday
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" name="days" value="3" disabled <% if (days[3]) { %> checked="checked" <% } %>>Wednesday
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" name="days" value="4" disabled <% if (days[4]) { %> checked="checked" <% } %>>Thursday
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" name="days" value="5" disabled <% if (days[5]) { %> checked="checked" <% } %>>Friday
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" name="days" value="6" disabled <% if (days[6]) { %> checked="checked" <% } %>>Saturday
+                    </label>
+                  </div>
+                </div>
+				</div>
+			</div>
+			<% if (user.role == "admin") { %>
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title">Administrator Section</h3>
+				</div>
+				<div class="panel-body">
+					<a href="/calendar"><button type="button" class="btn btn-sm btn-danger">Retrieve Events from Calendar Feeds</button></a>
+				</div>
+			</div>
+			<% } %>
+
+		</div>
+
+	</div>
+	<!-- end div row -->
+
+<hr>
+
+<% include footer.html %>
+<script type='text/javascript' src="/js/bootstrap-slider.js"></script>
+<script type='text/javascript'>
+	$(document).ready(function() {
+		$("#priceRange").slider({
+			tooltip: 'always'
+		});
+		$("#ex6").slider();
+		$("#ex6").on('slide', function(slideEvt) {
+		$("#ex6SliderVal").text(slideEvt.value);
+	});
+
+});
+</script>
